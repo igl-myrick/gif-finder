@@ -6,12 +6,21 @@
 <body>
   <h1>GIF Finder</h1>
   <img src=".././assets/images/giphy.png" alt="Giphy logo">
+  <h4>Search for GIFs</h4>
   <p>Enter a word or phrase into the form below to see up to 5 GIFs based on the search term.</p>
   <form id="search-form">
     <label for="gif-search">Enter a search term:</label>
     <input id="gif-search" type="text" name="gif-search">
     <button type="submit">Search</button>
   </form>
-  <div id="output"></div>
+  <div id="search-output"></div>
+  <h4>Display Trending GIFs</h4>
+  <p>Display up to 5 currently trending GIFs.</p>
+  <button type="button" id="trending-button">Show GIFs</button>
+  <div id="trending-output"></div>
+  <h4>Random GIF</h4>
+  <p>Display a random GIF.</p>
+  <button type="button" id="random-button">Show GIF</button>
+  <div id="random-output"></div>
 </body>
 </html>
