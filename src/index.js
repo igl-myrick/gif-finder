@@ -34,14 +34,24 @@ function printGIFs(apiResponse, query) {
   const outputDiv = document.querySelector(`#${query}-output`);
   let outputWrapper = document.createElement("div");
   outputWrapper.setAttribute("id", `${query}-output-wrapper`);
-  for (let i = 0; i < 5; i++) {
+  if (query === "random") {
     let newGifTitle = document.createElement("h4");
-    newGifTitle.innerText = apiResponse.data[i].title;
+    newGifTitle.innerText = apiResponse.data.title;
     let newGifElement = document.createElement("img");
-    newGifElement.setAttribute("src", `${apiResponse.data[i].images.fixed_height.url}`);
+    newGifElement.setAttribute("src", `${apiResponse.data.images.fixed_height.url}`);
     outputWrapper.append(newGifTitle);
     outputWrapper.append(newGifElement);
     outputDiv.append(outputWrapper);
+  } else {
+    for (let i = 0; i < 5; i++) {
+      let newGifTitle = document.createElement("h4");
+      newGifTitle.innerText = apiResponse.data[i].title;
+      let newGifElement = document.createElement("img");
+      newGifElement.setAttribute("src", `${apiResponse.data[i].images.fixed_height.url}`);
+      outputWrapper.append(newGifTitle);
+      outputWrapper.append(newGifElement);
+      outputDiv.append(outputWrapper);
+    }
   }
 }
 
@@ -57,7 +67,13 @@ function handleTrending(e) {
   getGIFs(`http://api.giphy.com/v1/gifs/trending?api_key=${process.env.API_KEY}&limit=5`, "trending");
 }
 
+function handleRandom(e) {
+  e.preventDefault();
+  getGIFs(`http://api.giphy.com/v1/gifs/random?api_key=${process.env.API_KEY}&rating=g`, "random");
+}
+
 window.addEventListener("load", function() {
   document.querySelector("#search-form").addEventListener("submit", handleSearch);
   document.querySelector("#trending-button").addEventListener("click", handleTrending);
+  document.querySelector("#random-button").addEventListener("click", handleRandom);
 });
