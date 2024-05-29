@@ -5,49 +5,55 @@ import "./css/styles.css";
 // business logic
 
 function getGIFs(requestURL, query) {
-  let request = new XMLHttpRequest();
-  const url = requestURL;
-
-  request.addEventListener("loadend", function() {
-    const response = JSON.parse(this.responseText);
-    if (this.status === 200) {
-      printGIFs(response, query);
-    } else {
-      printError(this, response);
-    }
+  let promise = new Promise(function(resolve, reject) {
+    let request = new XMLHttpRequest();
+    const url = requestURL;
+    request.addEventListener("loadend", function() {
+      const response = JSON.parse(this.responseText);
+      if (this.status === 200) {
+        resolve([response, query]);
+      } else {
+        reject([this, response]);
+      }
+    });
+    request.open("GET", url, true);
+    request.send();
   });
 
-  request.open("GET", url, true);
-  request.send();
+  promise.then(function(response) {
+    printGIFs(response);
+  }, function(error) {
+    printError(error);
+  });
 }
 
 // ui logic
 
-function printError(request, apiResponse) {
-  document.querySelector("#output").innerText = `There was an error: ${request.status} ${request.statusText}: ${apiResponse.message}`;
+function printError(error) {
+  document.querySelector("#output").innerText = `There was an error: ${error[1].status} ${error[1].statusText}: ${error[0].message}`;
 }
 
-function printGIFs(apiResponse, query) {
-  if (document.querySelector(`#${query}-output-wrapper`)) {
-    document.querySelector(`#${query}-output-wrapper`).remove();
+function printGIFs(data) {
+  if (document.querySelector(`#${data[1]}-output-wrapper`)) {
+    document.querySelector(`#${data[1]}-output-wrapper`).remove();
   }
-  const outputDiv = document.querySelector(`#${query}-output`);
+  const outputDiv = document.querySelector(`#${data[1]}-output`);
   let outputWrapper = document.createElement("div");
-  outputWrapper.setAttribute("id", `${query}-output-wrapper`);
-  if (query === "random") {
+  outputWrapper.setAttribute("id", `${data[1]}-output-wrapper`);
+  if (data[1] === "random") {
     let newGifTitle = document.createElement("h4");
-    newGifTitle.innerText = apiResponse.data.title;
+    newGifTitle.innerText = data[0].data.title;
     let newGifElement = document.createElement("img");
-    newGifElement.setAttribute("src", `${apiResponse.data.images.fixed_height.url}`);
+    newGifElement.setAttribute("src", `${data[0].data.images.fixed_height.url}`);
     outputWrapper.append(newGifTitle);
     outputWrapper.append(newGifElement);
     outputDiv.append(outputWrapper);
   } else {
     for (let i = 0; i < 5; i++) {
       let newGifTitle = document.createElement("h4");
-      newGifTitle.innerText = apiResponse.data[i].title;
+      newGifTitle.innerText = data[0].data[i].title;
       let newGifElement = document.createElement("img");
-      newGifElement.setAttribute("src", `${apiResponse.data[i].images.fixed_height.url}`);
+      newGifElement.setAttribute("src", `${data[0].data[i].images.fixed_height.url}`);
       outputWrapper.append(newGifTitle);
       outputWrapper.append(newGifElement);
       outputDiv.append(outputWrapper);
