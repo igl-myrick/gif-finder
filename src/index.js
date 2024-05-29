@@ -1,25 +1,12 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./css/styles.css";
+import GIFService from './gif-service';
 
 // business logic
 
 function getGIFs(requestURL, query) {
-  let promise = new Promise(function(resolve, reject) {
-    let request = new XMLHttpRequest();
-    const url = requestURL;
-    request.addEventListener("loadend", function() {
-      const response = JSON.parse(this.responseText);
-      if (this.status === 200) {
-        resolve([response, query]);
-      } else {
-        reject([this, response]);
-      }
-    });
-    request.open("GET", url, true);
-    request.send();
-  });
-
+  let promise = GIFService.getGIFs(requestURL, query);
   promise.then(function(response) {
     printGIFs(response);
   }, function(error) {
